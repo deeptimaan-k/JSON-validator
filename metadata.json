@@ -1,0 +1,6 @@
+{
+  "name": "JSON Template Validator",
+  "description": "A full-stack tool to validate and normalize JSON data against a predefined template, ensuring structural integrity and data consistency.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
