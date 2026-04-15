@@ -15,6 +15,24 @@ export function normalizeJsonWithChanges(template: any, data: any, path: string 
   const added: string[] = [];
   const removed: string[] = [];
 
+  const shouldIgnoreKey = (key: string) => {
+    const k = key.toLowerCase().replace(/_/g, " ");
+    return k.includes("month in word") || 
+           k.includes("date") || 
+           k.includes("eta") || 
+           k.includes("etd") || 
+           k.includes("cutoff") || 
+           k.includes("ship on board") || 
+           k.includes("shipped on board") ||
+           k.includes("pickup") ||
+           k.includes("vgm") ||
+           k.endsWith(" day") ||
+           k.endsWith(" year") ||
+           k.endsWith(" month") ||
+           k.includes("vessel") ||
+           k.includes("voyage");
+  };
+
   // If template is an object (and not an array)
   if (typeof template === "object" && template !== null && !Array.isArray(template)) {
     const result: any = {};
@@ -24,7 +42,12 @@ export function normalizeJsonWithChanges(template: any, data: any, path: string 
     // Find removed keys (in data but not in template)
     for (const key of dataKeys) {
       if (!(key in template)) {
-        removed.push(path ? `${path}.${key}` : key);
+        if (shouldIgnoreKey(key)) {
+          // Preserve date-related keys even if not in template
+          result[key] = data[key];
+        } else {
+          removed.push(path ? `${path}.${key}` : key);
+        }
       }
     }
 

@@ -85,48 +85,334 @@ const DRAFT_BL_TEMPLATE = {
 };
 
 const BOOKING_CONFIRMATION_TEMPLATE = {
-  "reference": { "additional_details": {} },
-  "items": { "additional_details": {} },
-  "exchange_rates": { "additional_details": {} },
+  "reference": {
+    "additional_details": {}
+  },
+  "items": {
+    "additional_details": {}
+  },
+  "exchange_rates": {
+    "additional_details": {}
+  },
   "details": {
     "additional_details": {},
-    "carrier_name": [{ "index": 0, "regex": " " }],
-    "booking_number": [{ "index": 0, "regex": " " }],
-    "vessel": [{ "index": 0, "regex": " " }],
-    "voyage_number": [{ "index": 0, "regex": " " }],
-    "etd": [{ "index": 0, "regex": " " }],
-    "eta": [{ "index": 0, "regex": " " }],
-    "port_of_loading": [{ "index": 0, "regex": " " }],
-    "port_of_discharge": [{ "index": 0, "regex": " " }],
-    "vgm_cutoff": [{ "index": 0, "regex": " " }],
-    "pickup_date": [{ "index": 0, "regex": " " }],
-    "number_of_containers": [{ "index": 0, "regex": " " }],
-    "service_type": [{ "index": 0, "regex": " " }],
-    "port_cutoff": [{ "index": 0, "regex": " " }],
-    "etd_year": [{ "index": 0, "regex": " " }],
-    "etd_month_in_number": [{ "index": 0, "regex": " " }],
-    "etd_day": [{ "index": 0, "regex": " " }],
-    "eta_year": [{ "index": 0, "regex": " " }],
-    "eta_month_in_number": [{ "index": 0, "regex": " " }],
-    "eta_day": [{ "index": 0, "regex": " " }],
-    "vgm_cutoff_year": [{ "index": 0, "regex": " " }],
-    "vgm_cutoff_month_in_number": [{ "index": 0, "regex": " " }],
-    "vgm_cutoff_day": [{ "index": 0, "regex": " " }],
-    "port_cutoff_day": [{ "index": 0, "regex": " " }],
-    "port_cutoff_month_in_number": [{ "index": 0, "regex": " " }],
-    "port_cutoff_year": [{ "index": 0, "regex": " " }],
-    "doc_cutoff": [{ "index": 0, "regex": " " }],
-    "doc_cutoff_year": [{ "index": 0, "regex": " " }],
-    "doc_cutoff_month_in_number": [{ "index": 0, "regex": " " }],
-    "doc_cutoff_day": [{ "index": 0, "regex": " " }],
-    "port_of_origin": [{ "index": 0, "regex": " " }],
-    "port_of_destination": [{ "index": 0, "regex": " " }],
-    "transit_time": [{ "index": 0, "regex": " " }],
-    "booking_validity": [{ "index": 0, "regex": " " }],
-    "container_details": [{ "index": 0, "regex": " " }],
-    "place_of_receipt": [{ "index": 0, "regex": " " }],
-    "place_of_delivery": [{ "index": 0, "regex": " " }],
-    "vessel_schedule": [{ "index": 0, "regex": " " }]
+    "booking_number": [
+      {
+        "index": 0,
+        "regex": "Booking Number ?:? ?([\\w]+)"
+      },
+      {
+        "regex": "Número de Booking ?\\: ?(\\w+)",
+        "index": 0
+      }
+    ],
+    "etd": [
+      {
+        "index": 0,
+        "regex": "ETD ?:? ?(\\d+[\\s\\/-]?[A-Za-z]+[\\s\\/-]?\\d+)"
+      }
+    ],
+    "eta": [
+      {
+        "index": 0,
+        "regex": ".+ETA ?:? ?([\\w\\-]+)",
+        "filter_coordinates": [
+          {
+            "regex": "ETD",
+            "substring": "ETD",
+            "where": "bottom"
+          },
+          {
+            "regex": "FPD ETA",
+            "substring": "FPD ETA",
+            "where": "top"
+          }
+        ]
+      }
+    ],
+    "port_of_destination": [
+      {
+        "index": 0,
+        "regex": "Port Of Discharge ?:? ?([\\w ]+)",
+        "filter_coordinates": [
+          {
+            "regex": "Port Of Discharge",
+            "substring": "Port Of Discharge",
+            "where": "start_left_top"
+          },
+          {
+            "regex": "ETA ?:?",
+            "substring": "ETA",
+            "where": "start_bottom"
+          },
+          {
+            "regex": "Final Place Of Delivery",
+            "substring": "Final Place Of Delivery",
+            "where": "top"
+          }
+        ]
+      }
+    ],
+    "port_of_origin": [
+      {
+        "index": 0,
+        "regex": "Port [oO]f Loading ?\\:? ?(\\w+)"
+      },
+      {
+        "regex": "Puerto de Carga ?\\:? ?(\\w+)",
+        "index": 0
+      }
+    ],
+    "pickup_date": [
+      {
+        "index": 0,
+        "regex": "Empty Pick Up Date ?\\: ?([\\w\\/-]+)"
+      }
+    ],
+    "port_of_discharge": [
+      {
+        "index": 0,
+        "regex": "Port Of Discharge ?:? ?([\\w ]+)",
+        "filter_coordinates": [
+          {
+            "regex": "Port Of Discharge",
+            "substring": "Port Of Discharge",
+            "where": "start_left_top"
+          },
+          {
+            "regex": "ETA ?:?",
+            "substring": "ETA",
+            "where": "start_bottom"
+          },
+          {
+            "regex": "Final Place Of Delivery",
+            "substring": "Final Place Of Delivery",
+            "where": "top"
+          }
+        ]
+      },
+      {
+        "filter_coordinates": [
+          {
+            "regex": "Puerto de Descarga",
+            "substring": "Puerto de Descarga",
+            "where": "top"
+          },
+          {
+            "regex": "FPD ETA ?:?",
+            "substring": "ETA",
+            "where": "start_bottom"
+          }
+        ],
+        "index": 0,
+        "regex": "Puerto de Descarga ?:? ?([\\w ]+)"
+      }
+    ],
+    "vessel": [
+      {
+        "index": 0,
+        "regex": "Vessel/Voyage ?:? ?([\\w ]+) ?/ ?([\\w ]+)"
+      },
+      {
+        "regex": "Buque \\/ No. Viaje ?:? ?([\\w ]+) ?/ ?([\\w ]+)",
+        "index": 0
+      }
+    ],
+    "voyage_number": [
+      {
+        "index": 1,
+        "regex": "Vessel/Voyage ?:? ?([\\w ]+) ?/ ?([\\w ]+)"
+      },
+      {
+        "regex": "Buque \\/ No. Viaje ?:? ?([\\w ]+) ?/ ?([\\w ]+)",
+        "index": 1
+      }
+    ],
+    "port_cutoff": [
+      {
+        "index": 0,
+        "regex": "Port Cut-Off Date.?Time ?:? ?([\\w-]+)"
+      }
+    ],
+    "doc_cutoff": [
+      {
+        "index": 0,
+        "regex": "Terminal Cut-Off ?[\\:]+ ?(\\d+[\\s\\/-]?[A-Za-z]+[\\s\\/-]?\\d+) "
+      },
+      {
+        "regex": "SI Cut-Off Date/Time ?:? ?([\\w-]+)",
+        "index": 0
+      }
+    ],
+    "vgm_cutoff": [
+      {
+        "index": 0,
+        "regex": "VGM Cut-Off Date/Time ?:? ?([\\w\\-]+)"
+      }
+    ],
+    "transit_time": [
+      {
+        "index": 0,
+        "regex": " "
+      }
+    ],
+    "booking_validity": [
+      {
+        "index": 0,
+        "regex": " "
+      }
+    ],
+    "container_details": [
+      {
+        "index": 0,
+        "regex": "Quantity ?:? ([\\d]+ ?[X|x] ?[\\w\\']+)",
+        "multiple_values": true
+      }
+    ],
+    "vgm_cutoff_day": [
+      {
+        "index": 0,
+        "regex": "VGM Cut-Off Date ?/? ?Time ?:? ?(\\d+)[\\s\\/-]?([A-Za-z]+)[\\s\\/-]?(\\d+) "
+      }
+    ],
+    "vgm_cutoff_year": [
+      {
+        "index": 2,
+        "regex": "VGM Cut-Off Date ?/? ?Time ?:? ?(\\d+)[\\s\\/-]?([A-Za-z]+)[\\s\\/-]?(\\d+) "
+      }
+    ],
+    "eta_day": [
+      {
+        "index": 0,
+        "regex": ".+ETA ?:? ?(\\d+)[\\s\\/-]?([A-Za-z]+)[\\s\\/-]?(\\d+)",
+        "filter_coordinates": [
+          {
+            "regex": "ETD",
+            "substring": "ETD",
+            "where": "bottom"
+          },
+          {
+            "regex": "FPD ETA",
+            "substring": "FPD ETA",
+            "where": "top"
+          }
+        ]
+      }
+    ],
+    "eta_month_in_word": [
+      {
+        "index": 1,
+        "regex": ".+ETA ?:? ?(\\d+)[\\s\\/-]?([A-Za-z]+)[\\s\\/-]?(\\d+)",
+        "filter_coordinates": [
+          {
+            "regex": "ETD",
+            "substring": "ETD",
+            "where": "bottom"
+          },
+          {
+            "regex": "FPD ETA",
+            "substring": "FPD ETA",
+            "where": "top"
+          }
+        ]
+      }
+    ],
+    "eta_year": [
+      {
+        "index": 2,
+        "regex": ".+ETA ?:? ?(\\d+)[\\s\\/-]?([A-Za-z]+)[\\s\\/-]?(\\d+) ",
+        "filter_coordinates": [
+          {
+            "regex": "ETD",
+            "substring": "ETD",
+            "where": "bottom"
+          },
+          {
+            "regex": "FPD ETA",
+            "substring": "FPD ETA",
+            "where": "top"
+          }
+        ]
+      }
+    ],
+    "etd_day": [
+      {
+        "index": 0,
+        "regex": "ETD ?:? ?(\\d+)[\\s\\/-]?([A-Za-z]+)[\\s\\/-]?(\\d+)"
+      }
+    ],
+    "etd_month_in_word": [
+      {
+        "index": 1,
+        "regex": "ETD ?:? ?(\\d+)[\\s\\/-]?([A-Za-z]+)[\\s\\/-]?(\\d+)"
+      }
+    ],
+    "etd_year": [
+      {
+        "index": 2,
+        "regex": "ETD ?:? ?(\\d+)[\\s\\/-]?([A-Za-z]+)[\\s\\/-]?(\\d+)"
+      }
+    ],
+    "doc_cutoff_day": [
+      {
+        "index": 0,
+        "regex": "Terminal Cut-Off ?[\\:]+ ?(\\d+)[\\s\\/-]?([A-Za-z]+)[\\s\\/-]?(\\d+) "
+      },
+      {
+        "regex": "SI Cut-Off Date/Time ?:? ?([\\d]{2})-?([\\w]{3})-?([\\d]{4})",
+        "index": 0
+      }
+    ],
+    "doc_cutoff_month_in_word": [
+      {
+        "index": 1,
+        "regex": "Terminal Cut-Off ?[\\:]+ ?(\\d+)[\\s\\/-]?([A-Za-z]+)[\\s\\/-]?(\\d+) "
+      },
+      {
+        "regex": "SI Cut-Off Date/Time ?:? ?([\\d]{2})-?([\\w]{3})-?([\\d]{4})",
+        "index": 1
+      }
+    ],
+    "doc_cutoff_year": [
+      {
+        "index": 2,
+        "regex": "Terminal Cut-Off ?[\\:]+ ?(\\d+)[\\s\\/-]?([A-Za-z]+)[\\s\\/-]?(\\d+) "
+      },
+      {
+        "regex": "SI Cut-Off Date/Time ?:? ?([\\d]{2})-?([\\w]{3})-?([\\d]{4})",
+        "index": 2
+      }
+    ],
+    "port_cutoff_day": [
+      {
+        "index": 0,
+        "regex": "Port Cut-Off Date.?Time ?:? ?([\\d]{2})-?/?.?([\\w]{3})-?/?.?([\\d]{4})"
+      }
+    ],
+    "port_cutoff_month_in_word": [
+      {
+        "index": 1,
+        "regex": "Port Cut-Off Date.?Time ?:? ?([\\d]{2})-?/?.?([\\w]{3})-?/?.?([\\d]{4})"
+      }
+    ],
+    "port_cutoff_year": [
+      {
+        "index": 2,
+        "regex": "Port Cut-Off Date.?Time ?:? ?([\\d]{2})-?/?.?([\\w]{3})-?/?.?([\\d]{4})"
+      }
+    ],
+    "vgm_cutoff_month_in_word": [
+      {
+        "index": 1,
+        "regex": "VGM Cut-Off Date ?/? ?Time ?:? ?(\\d+)[\\s\\/-]?([A-Za-z]+)[\\s\\/-]?(\\d+) "
+      }
+    ],
+    "service_type": [
+      {
+        "index": 0,
+        "regex": ""
+      }
+    ]
   },
   "master_details": {}
 };
@@ -411,10 +697,10 @@ export default function App() {
               </DialogHeader>
             </div>
 
-            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-hidden">
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-hidden min-h-0">
               {/* Added Fields Section */}
-              <div className="p-10 border-r border-white/[0.08] flex flex-col bg-green-500/[0.02] relative">
-                <div className="flex items-center justify-between mb-8">
+              <div className="p-10 border-r border-white/[0.08] flex flex-col bg-green-500/[0.02] relative min-h-0">
+                <div className="flex items-center justify-between mb-8 shrink-0">
                   <div className="flex items-center gap-4">
                     <div className="bg-green-500/20 p-2 rounded-xl border border-green-500/20">
                       <Plus className="h-5 w-5 text-green-500" />
@@ -426,40 +712,42 @@ export default function App() {
                   </div>
                 </div>
                 
-                <ScrollArea className="flex-1 rounded-3xl border border-white/[0.05] bg-black/60 p-8 shadow-inner">
-                  <AnimatePresence mode="popLayout">
-                    <div className="space-y-4">
-                      {summary?.added.length === 0 ? (
-                        <motion.div 
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          className="flex flex-col items-center justify-center h-[400px] opacity-20"
-                        >
-                          <Database className="h-16 w-16 mb-6" />
-                          <p className="text-lg font-medium italic">No new fields were required.</p>
-                        </motion.div>
-                      ) : (
-                        summary?.added.map((key, i) => (
+                <ScrollArea className="flex-1 rounded-3xl border border-white/[0.05] bg-black/60 shadow-inner">
+                  <div className="p-8">
+                    <AnimatePresence mode="popLayout">
+                      <div className="space-y-4">
+                        {summary?.added.length === 0 ? (
                           <motion.div 
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.01 }}
-                            key={i} 
-                            className="group/item text-[13px] font-mono text-green-400/80 bg-green-500/[0.03] p-4 rounded-xl border border-green-500/10 flex items-center gap-4 hover:bg-green-500/10 hover:border-green-500/30 transition-all cursor-default"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="flex flex-col items-center justify-center h-[400px] opacity-20"
                           >
-                            <span className="text-green-500/20 font-black text-lg w-8">{String(i + 1).padStart(2, '0')}</span>
-                            <span className="break-all leading-relaxed">{key}</span>
+                            <Database className="h-16 w-16 mb-6" />
+                            <p className="text-lg font-medium italic">No new fields were required.</p>
                           </motion.div>
-                        ))
-                      )}
-                    </div>
-                  </AnimatePresence>
+                        ) : (
+                          summary?.added.map((key, i) => (
+                            <motion.div 
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.01 }}
+                              key={i} 
+                              className="group/item text-[13px] font-mono text-green-400/80 bg-green-500/[0.03] p-4 rounded-xl border border-green-500/10 flex items-center gap-4 hover:bg-green-500/10 hover:border-green-500/30 transition-all cursor-default"
+                            >
+                              <span className="text-green-500/20 font-black text-lg w-8">{String(i + 1).padStart(2, '0')}</span>
+                              <span className="break-all leading-relaxed">{key}</span>
+                            </motion.div>
+                          ))
+                        )}
+                      </div>
+                    </AnimatePresence>
+                  </div>
                 </ScrollArea>
               </div>
 
               {/* Removed Fields Section */}
-              <div className="p-10 flex flex-col bg-red-500/[0.02] relative">
-                <div className="flex items-center justify-between mb-8">
+              <div className="p-10 flex flex-col bg-red-500/[0.02] relative min-h-0">
+                <div className="flex items-center justify-between mb-8 shrink-0">
                   <div className="flex items-center gap-4">
                     <div className="bg-red-500/20 p-2 rounded-xl border border-red-500/20">
                       <Minus className="h-5 w-5 text-red-500" />
@@ -471,34 +759,36 @@ export default function App() {
                   </div>
                 </div>
                 
-                <ScrollArea className="flex-1 rounded-3xl border border-white/[0.05] bg-black/60 p-8 shadow-inner">
-                  <AnimatePresence mode="popLayout">
-                    <div className="space-y-4">
-                      {summary?.removed.length === 0 ? (
-                        <motion.div 
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          className="flex flex-col items-center justify-center h-[400px] opacity-20"
-                        >
-                          <Database className="h-16 w-16 mb-6" />
-                          <p className="text-lg font-medium italic">Input data was already clean.</p>
-                        </motion.div>
-                      ) : (
-                        summary?.removed.map((key, i) => (
+                <ScrollArea className="flex-1 rounded-3xl border border-white/[0.05] bg-black/60 shadow-inner">
+                  <div className="p-8">
+                    <AnimatePresence mode="popLayout">
+                      <div className="space-y-4">
+                        {summary?.removed.length === 0 ? (
                           <motion.div 
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.01 }}
-                            key={i} 
-                            className="group/item text-[13px] font-mono text-red-400/80 bg-red-500/[0.03] p-4 rounded-xl border border-red-500/10 flex items-center gap-4 hover:bg-red-500/10 hover:border-red-500/30 transition-all cursor-default"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="flex flex-col items-center justify-center h-[400px] opacity-20"
                           >
-                            <span className="text-red-500/20 font-black text-lg w-8">{String(i + 1).padStart(2, '0')}</span>
-                            <span className="break-all leading-relaxed">{key}</span>
+                            <Database className="h-16 w-16 mb-6" />
+                            <p className="text-lg font-medium italic">Input data was already clean.</p>
                           </motion.div>
-                        ))
-                      )}
-                    </div>
-                  </AnimatePresence>
+                        ) : (
+                          summary?.removed.map((key, i) => (
+                            <motion.div 
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.01 }}
+                              key={i} 
+                              className="group/item text-[13px] font-mono text-red-400/80 bg-red-500/[0.03] p-4 rounded-xl border border-red-500/10 flex items-center gap-4 hover:bg-red-500/10 hover:border-red-500/30 transition-all cursor-default"
+                            >
+                              <span className="text-red-500/20 font-black text-lg w-8">{String(i + 1).padStart(2, '0')}</span>
+                              <span className="break-all leading-relaxed">{key}</span>
+                            </motion.div>
+                          ))
+                        )}
+                      </div>
+                    </AnimatePresence>
+                  </div>
                 </ScrollArea>
               </div>
             </div>
